@@ -32,6 +32,16 @@ int main()
 
 	CLinkedList<int> LinkedList;
 
+	LinkedList.push_back(52);
+	LinkedList.push_back(1);
+	LinkedList.push_front(3);
+	LinkedList.push_back(194);
+	LinkedList.push_front(10);
+
+	std::cout << LinkedList << std::endl;
+
+	std::cout << (*LinkedList.find(194)) << std::endl;
+
     return 0;
 }
 

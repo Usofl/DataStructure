@@ -21,7 +21,7 @@ public:
 		if (m_backNode)
 		{
 			m_backNode->SetPreNode(pNode);
-			pNode->SetPostNode(pNode);
+			pNode->SetPostNode(m_backNode);
 			m_backNode = pNode;
 		}
 		else
@@ -38,6 +38,7 @@ public:
 		if (m_frontNode)
 		{
 			pNode->SetPreNode(m_frontNode);
+			m_frontNode->SetPostNode(pNode);
 			m_frontNode = pNode;
 		}
 		else
@@ -58,7 +59,13 @@ public:
 				return;
 			}
 
-			m_frontNode = m_frontNode->GetLinkNode();
+			m_frontNode = m_frontNode->GetPreNode();
+
+			if (m_frontNode)
+			{
+				m_frontNode->GetPostNode()->SetPreNode(nullptr);
+				m_frontNode->SetPostNode(nullptr);
+			}
 		}
 	}
 
@@ -73,8 +80,30 @@ public:
 				return;
 			}
 
-			m_backNode = m_backNode->GetLinkNode();
+			m_backNode = m_backNode->GetPostNode();
+
+			if (m_backNode)
+			{
+				m_backNode->GetPreNode()->SetPostNode(nullptr);
+				m_backNode->SetPreNode(nullptr);
+			}
 		}
+	}
+
+	std::shared_ptr<CDoubleLinkedNode<T>> find(const T& _Data)
+	{
+		std::shared_ptr<CDoubleLinkedNode<T>> _CurNode = m_frontNode;
+
+		while (_CurNode)
+		{
+			if (_Data == *_CurNode)
+			{
+				return _CurNode;
+			}
+			_CurNode = _CurNode->GetPreNode();
+		}
+
+		return nullptr;
 	}
 
 	inline T front(void)
@@ -82,14 +111,19 @@ public:
 		return *m_frontNode;
 	}
 
-	friend std::ostream& operator << (std::ostream& out, CQueue<T> _rhs)
+	inline T back(void)
+	{
+		return *m_backNode;
+	}
+
+	friend std::ostream& operator << (std::ostream& out, CLinkedList<T> _rhs)
 	{
 		std::shared_ptr<CDoubleLinkedNode<T>> _CurNode = _rhs.m_frontNode;
 
 		while (_CurNode)
 		{
 			out << *_CurNode << '\n';
-			_CurNode = _CurNode->GetLinkNode();
+			_CurNode = _CurNode->GetPreNode();
 		}
 
 		return out;
