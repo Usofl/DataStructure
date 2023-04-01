@@ -1,0 +1,105 @@
+#pragma once
+
+template<typename T>
+class CNode
+{
+public:
+	CNode(const T& _data)
+		: m_Data(_data)
+	{
+	}
+	CNode(const CNode<T>& _other)
+		: m_Data(_other.m_Data)
+	{
+	}
+	~CNode() = default;
+
+public:
+	friend std::ostream& operator << (std::ostream& out, CNode<T> _rhs)
+	{
+		out << _rhs.m_Data;
+
+		return out;
+	}
+
+	operator T&()
+	{
+		return m_Data;
+	}
+
+private:
+	T m_Data;
+};
+
+template<typename T>
+class CSingleLinkedNode final : public CNode<T>
+{
+public:
+	CSingleLinkedNode(const T& _data)
+		: CNode<T>(_data)
+	{
+	}
+	CSingleLinkedNode(const CSingleLinkedNode<T>& _other)
+		: CNode<T>(_other)
+		, m_linkedNode(_other.m_linkedNode)
+	{
+	}
+	~CSingleLinkedNode() = default;
+
+public:
+	inline std::shared_ptr<CSingleLinkedNode<T>> GetLinkNode()
+	{
+		return (m_linkedNode);
+	}
+
+	inline void SetLinkNode(std::shared_ptr<CSingleLinkedNode<T>> _linkNode)
+	{
+		m_linkedNode = (_linkNode);
+	}
+
+private:
+	std::shared_ptr<CSingleLinkedNode<T>> m_linkedNode = nullptr;
+};
+
+
+template<typename T>
+class CDoubleLinkedNode final : public CNode<T>
+{
+public:
+	CDoubleLinkedNode(const T& _data)
+		: CNode<T>(_data)
+	{
+	}
+	CDoubleLinkedNode(const CSingleLinkedNode<T>& _other)
+		: CNode<T>(_other)
+		, m_PrelinkedNode(_other.m_PrelinkedNode)
+		, m_PostlinkedNode(_other.m_PostlinkedNode)
+	{
+	}
+	~CDoubleLinkedNode() = default;
+
+public:
+	inline std::shared_ptr<CDoubleLinkedNode<T>> GetPreNode()
+	{
+		return (m_PrelinkedNode);
+	}
+
+	inline void SetPreNode(std::shared_ptr<CDoubleLinkedNode<T>> _linkNode)
+	{
+		m_PrelinkedNode = (_linkNode);
+	}
+
+	inline std::shared_ptr<CDoubleLinkedNode<T>> GetPostNode()
+	{
+		return (m_PostlinkedNode);
+	}
+
+	inline void SetPostNode(std::shared_ptr<CDoubleLinkedNode<T>> _linkNode)
+	{
+		m_PostlinkedNode = (_linkNode);
+	}
+
+private:
+	std::shared_ptr<CDoubleLinkedNode<T>> m_PostlinkedNode = nullptr;
+	std::shared_ptr<CDoubleLinkedNode<T>> m_PrelinkedNode = nullptr;
+};
