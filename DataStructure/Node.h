@@ -61,7 +61,6 @@ private:
 	std::shared_ptr<CSingleLinkedNode<T>> m_linkedNode = nullptr;
 };
 
-
 template<typename T>
 class CDoubleLinkedNode final : public CNode<T>
 {
@@ -70,7 +69,7 @@ public:
 		: CNode<T>(_data)
 	{
 	}
-	CDoubleLinkedNode(const CSingleLinkedNode<T>& _other)
+	CDoubleLinkedNode(const CDoubleLinkedNode<T>& _other)
 		: CNode<T>(_other)
 		, m_PrelinkedNode(_other.m_PrelinkedNode)
 		, m_PostlinkedNode(_other.m_PostlinkedNode)
@@ -102,4 +101,71 @@ public:
 private:
 	std::shared_ptr<CDoubleLinkedNode<T>> m_PostlinkedNode = nullptr;
 	std::shared_ptr<CDoubleLinkedNode<T>> m_PrelinkedNode = nullptr;
+};
+
+
+template<typename T>
+class CTreeNode final : public CNode<T>
+{
+public:
+	CTreeNode(const T& _data, const unsigned int& _iSize)
+		: CNode<T>(_data)
+		, m_iSize(_iSize)
+		, m_ParentNode(nullptr)
+	{
+		std::unique_ptr<std::shared_ptr<CTreeNode<T>>[]> Array(new T[_iSize]);
+
+		m_ChildNodes = std::move(Array);
+	}
+	CTreeNode(const CTreeNode<T>& _other)
+		: CNode<T>(_other)
+		, m_iSize(_other.m_iSize)
+		, m_ParentNode(_other.m_ParentNode)
+	{
+		std::unique_ptr<std::shared_ptr<CTreeNode<T>>[]> Array(new T[_iSize]);
+
+		for (int i = 0; i < m_iSize; ++i)
+		{
+			Array[i] = _other.m_ChildNodes[i];
+		}
+
+		m_ChildNodes = std::move(Array);
+	}
+	~CTreeNode() = default;
+
+public:
+	inline std::shared_ptr<CTreeNode<T>> GetParentNode()
+	{
+		return (m_ParentNode.lock());
+	}
+
+	inline void SetParentNode(std::shared_ptr<CTreeNode<T>> _ParentNode)
+	{
+		m_ParentNode = (_ParentNode);
+	}
+
+	inline std::shared_ptr<CTreeNode<T>> GetChildNode(const unsigned int& _iIndex)
+	{
+		if (_iIndex >= m_iSize)
+		{
+			return nullptr;
+		}
+
+		return (m_ChildNodes[_iIndex]);
+	}
+
+	inline void SetChildNode(const unsigned int& _iIndex, std::shared_ptr<CTreeNode<T>> _linkNode)
+	{
+		if (_iIndex >= m_iSize)
+		{
+			return;
+		}
+
+		m_ChildNodes[_iIndex] = (_linkNode);
+	}
+
+private:
+	unsigned int m_iSize = 0;
+	std::weak_ptr<CTreeNode<T>> m_ParentNode = nullptr;
+	std::unique_ptr<std::shared_ptr<CTreeNode<T>>[]> m_ChildNodes;
 };

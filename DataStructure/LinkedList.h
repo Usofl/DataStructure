@@ -14,6 +14,26 @@ public:
 	~CLinkedList() = default;
 
 public:
+	inline void push(const T& _FindData, const T& _Data)
+	{
+		std::shared_ptr<CDoubleLinkedNode<T>>& pNode(std::make_shared<CDoubleLinkedNode<T>>(_Data));
+
+		std::shared_ptr<CDoubleLinkedNode<T>>& findNode(_FindData);
+
+		if (findNode)
+		{
+			pNode->SetPostNode(findNode);
+			pNode->SetPreNode(findNode->GetPreNode());
+
+			findNode->SetPreNode(pNode);
+
+			if (m_backNode == findNode)
+			{
+				m_backNode = findNode;
+			}
+		}
+	}
+
 	inline void push_back(const T& _Data)
 	{
 		std::shared_ptr<CDoubleLinkedNode<T>>& pNode(std::make_shared<CDoubleLinkedNode<T>>(_Data));
